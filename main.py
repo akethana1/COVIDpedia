@@ -53,13 +53,13 @@ soup1 = bs(page1.text, 'html5lib')
 import pandas as pd
 #3 CDC COVID Guidelines
 page2 = requests.get("https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/prevention.html")
-page2.content;
-from bs4 import BeautifulSoup as bs, SoupStrainer
 soup = bs(page2.content, 'html.parser')
-#print(soup.find_all("li"))
-cdc = []
-for i in range(67,115):
-  cdc.append(soup.find_all("li")[i].get_text())
-print(cdc)
+rules = [i.get_text() for i in soup.find_all("h2") + soup.find_all("h3")][:-2]
+
+cdc = [i.get_text() for i in rules]
+
+for i in cdc:
+	print(i)
+
 
 
