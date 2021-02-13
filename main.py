@@ -52,9 +52,10 @@ soup1 = bs(page1.text, 'html5lib')
 #print(soup1.prettify())
 import pandas as pd
 #3 CDC COVID Guidelines
+#3 CDC COVID Guidelines
 page2 = requests.get("https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/prevention.html")
-soup = bs(page2.content, 'html.parser')
-rules = [i.get_text() for i in soup.find_all("h2") + soup.find_all("h3")][:-2]
+soup2 = bs(page2.content, 'html.parser')
+rules = [i.get_text() for i in soup2.find_all("h2") + soup2.find_all("h3")][:-2]
 
 cdc = [i.get_text() for i in rules]
 
