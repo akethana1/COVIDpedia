@@ -61,6 +61,29 @@ cdc = [i.get_text() for i in rules]
 
 for i in cdc:
 	print(i)
+#4 vaccine information
+page3 = requests.get("https://www.cdc.gov/coronavirus/2019-ncov/vaccines/index.html")
+soup3 = bs(page3.content, 'html.parser')
+soup3.find_all('a',attrs={"class":"dropdown-item noLinking"})
+print(soup3.find_all('a',attrs={"class":"dropdown-item noLinking"}))
+links=[]
+states=[
+        "alabama", "alaska", "arizona", "arkansas", "california", "colorado",
+        "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho",
+        "illinois", "indiana", "iowa", "kansas", "kentucky", "louisiana",
+        "maine", "maryland", "massachusetts", "michigan", "minnesota",
+        "sippi", "missouri", "montana", "nebraska", "nevada",
+        "new hampshire", "new jersey", "new mexico", "new york",
+        "north carolina", "north dakota", "ohio", "oklahoma", "oregon",
+        "pennsylvania", "rhode island", "south carolina", "south dakota",
+        "tennessee", "texas", "utah", "vermont", "virginia", "washington",
+        "west virginia", "wisconsin", "wyoming"]
+for i in range(len(soup3.find_all('a',attrs={"class":"dropdown-item noLinking"}))):
+  print(print(soup3.find_all('a',attrs={"class":"dropdown-item noLinking"})[i].get_text()))
+for link in soup3.find_all('a',attrs={"class":"dropdown-item noLinking"}, href=True):
+    links.append(link['href'])
+print(states)
+print(links)
 
 
 
