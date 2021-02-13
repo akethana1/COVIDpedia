@@ -52,10 +52,10 @@ soup1 = bs(page1.text, 'html5lib')
 #print(soup1.prettify())
 import pandas as pd
 #3 CDC COVID Guidelines
-page3 = requests.get("https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/prevention.html")
-page3.content;
+page2 = requests.get("https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/prevention.html")
+page2.content;
 from bs4 import BeautifulSoup as bs, SoupStrainer
-soup = bs(page3.content, 'html.parser')
+soup = bs(page2.content, 'html.parser')
 #print(soup.find_all("li"))
 cdc = []
 for i in range(67,115):
