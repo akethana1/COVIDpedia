@@ -16,7 +16,7 @@ soup = bs(page.content, 'html.parser')
 f = open("data.txt", "a")
 # page1.content
 #print(soup1.prettify())
-data = []
+data = []#county data
 import pandas as pd
 for state in ["alabama", "alaska", "arizona", "arkansas", "california","colorado", "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho", "illinois","indiana","iowa","kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts","michigan","minnesota","mississippi","missouri","montana", "nebraska", "nevada", "new hampshire", "new jersey", "new mexico", "new york", "north carolina", "north dakota", "ohio", "oklahoma", "oregon","pennsylvania", "rhode island", "south carolina", "south dakota","tennessee", "texas", "utah", "vermont", "virginia", "washington", "west virginia", "wisconsin", "wyoming"]:
   url = f"https://www.nytimes.com/interactive/2020/us/{state.replace(' ', '-')}-coronavirus-cases.html"
@@ -36,17 +36,30 @@ for state in ["alabama", "alaska", "arizona", "arkansas", "california","colorado
     f.write(i.text)
     f.write("\n")
     f.write("\n====\n")
-pd.concat(data).to_csv('test.csv')
+for i in range(50):#rename columns for county data
+    data[i]=data[i].rename(columns={"Unnamed: 0": "State+County", "Per 100,000":"Cases Per 100,000",
+                       "Per 100,000.1":"Deaths Per 100,000",
+                       "Daily avg.in last7 days":"Daily avg. Cases in last 7 days",
+                       "Per 100,000.2":"Daily avg. Cases in last 7 days per 100,000",
+                       "Daily avg.in last7 days.1":"Daily avg. Deaths in last 7 days",
+                       "Per 100,000.3":"Daily avg. Deaths in last 7 days per 100,000"})
+    data[i]=data[i].drop(["Weekly cases per capita Fewer More"],axis=1)
+
 f.close()
 page1 = requests.get("https://www.nytimes.com/interactive/2020/us/california-coronavirus-cases.html?#county")
 # page1.content
 soup1 = bs(page1.text, 'html5lib')
 #print(soup1.prettify())
 import pandas as pd
-print(soup1.find_all('table', attrs={"class": "svelte-1a4y62p"})[0])
+#3 CDC COVID Guidelines
 page2 = requests.get("https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/prevention.html")
-soup2 = bs(page2.text, 'html5lib')
-#3 tips -> li
-page3 = requests.get("https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/prevention.html")
-soup3 = bs(page3.text, 'html5lib')
-print(soup3.find_all("li"))
+page2.content;
+from bs4 import BeautifulSoup as bs, SoupStrainer
+soup = bs(page2.content, 'html.parser')
+#print(soup.find_all("li"))
+cdc = []
+for i in range(67,115):
+  cdc.append(soup.find_all("li")[i].get_text())
+  print(soup.find_all("li")[i].get_text()+" "+str(i))
+print(cdc)
+
