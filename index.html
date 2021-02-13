@@ -1,0 +1,32 @@
+from bs4 import BeautifulSoup as bs4
+
+data = []
+import requests
+import beautifulsoup as bs
+import pandas as pd
+for state in ["alabama", "alaska", "arizona", "arkansas", "california","colorado", "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho", "illinois","indiana","iowa","kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts","michigan","minnesota","mississippi","missouri","montana", "nebraska", "nevada", "new hampshire", "new jersey", "new mexico", "new york", "north carolina", "north dakota", "ohio", "oklahoma", "oregon","pennsylvania", "rhode island", "south carolina", "south dakota","tennessee", "texas", "utah", "vermont", "virginia", "washington", "west virginia", "wisconsin", "wyoming"]:
+  url = f"https://www.nytimes.com/interactive/2020/us/{state.replace(' ', '-')}-coronavirus-cases.html"
+  session = requests.Session()
+  response = session.get(url)
+  soup1 = bs(response.text, 'html5lib')
+  table = soup1.find_all('table', attrs={"class": "svelte-1a4y62p"})               #finds all tables
+  table_top = pd.read_html(str(table))[0]      #the top table        
+  result = pd.concat([table_top])
+  data.append(result)
+for i in range(50):#rename columns for county data
+    data[i]=data[i].rename(columns={"Unnamed: 0": "State+County", "Per 100,000":"Cases Per 100,000",
+                       "Per 100,000.1":"Deaths Per 100,000",
+                       "Daily avg.in last7 days":"Daily avg. Cases in last 7 days",
+                       "Per 100,000.2":"Daily avg. Cases in last 7 days per 100,000",
+                       "Daily avg.in last7 days.1":"Daily avg. Deaths in last 7 days",
+                       "Per 100,000.3":"Daily avg. Deaths in last 7 days per 100,000"})
+    data[i]=data[i].drop(["Weekly cases per capita Fewer More"],axis=1)
+for i in range(50):#rename columns for county data
+  data[i]=data[i].rename(columns={"Unnamed: 0": "State+County", "Per 100,000":"Cases Per 100,000",
+  "Per 100,000.1":"Deaths Per 100,000",
+  "Daily avg.in last7 days":"Daily avg. Cases in last 7 days",
+  "Per 100,000.2":"Daily avg. Cases in last 7 days per 100,000",
+  "Daily avg.in last7 days.1":"Daily avg. Deaths in last 7 days",
+  "Per 100,000.3":"Daily avg. Deaths in last 7 days per 100,000"})
+data[i]=data[i].drop(["Weekly cases per capita Fewer More"],axis=1)
+print(data)
