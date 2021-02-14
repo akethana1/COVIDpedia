@@ -3,9 +3,12 @@ import requests
 import pandas as pd
 from datetime import timedelta
 from os import path
+import seaborn as sns
+import matplotlib.pyplot as plt
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_session import Session
 
+# load data once every day
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
@@ -58,7 +61,7 @@ def state_data(s):
 	return data, yesterday
 
 def county_data(s):
-	if "state_data" not in session or not path.exists("templates/county.html"):
+	if "state_data" not in session or not path.exists("templates/county.html") or not path.exists("graph.png"):
 		data = []
 
 		for state in s:
@@ -87,10 +90,19 @@ def county_data(s):
 			})
 			data[i] = data[i].drop(datacolumns[-1], axis=1)
 
+		totalcases_state = []
+		abbreviations = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
+		for i in range(len(abbreviations)):
+			totalcases_state.append(data[i]['Total Cases'][0])
+		fig_dims = (30, 30)
+		fig, ax = plt.subplots(figsize=fig_dims)
+		plot = sns.barplot(x = abbreviations, y = totalcases_state, ax=ax)
+		plot.figure.savefig("graph.pdf")
+
 		countyfile = open("templates/county.html", "w")
 		countyfile.close()
 		countyfile = open("templates/county.html", "a")
-		countyfile.write('{% extends "layout.html" %} {% block title %} County Statistics {% endblock %} {% block main %}')
+		countyfile.write('{% extends "layout.html" %} {% block title %} County Statistics {% endblock %} {% block heading %} Statistics By County {% endblock %} {% block main %}')
 
 		for i in data:
 			datahtml = i.to_html()
@@ -102,20 +114,20 @@ def county_data(s):
 def safety_info():
 	page2 = requests.get("https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/prevention.html")
 	soup = bs(page2.content, 'html.parser')
-	cdc = [i.get_text() for i in soup.find_all("h2") + soup.find_all("h3")][:-2]
+	cdc = [i.get_text().capitalize().replace("covid-19", "COVID-19") for i in soup.find_all("h2") + soup.find_all("h3")][:-2]
 	return cdc
 
-@app.route("/all-states")
+@app.route("/state-statistics/all")
 def index():
 	data, yesterday = setup()
 	return render_template("index.html", data={"counts": data, "all_states": states, "yesterday": yesterday})
 
-@app.route("/state", methods=["POST"])
+@app.route("/state-statistics", methods=["POST"])
 def getstate():
 	selectedstate = request.form.get("stateselector").replace(' ', '-').lower()
 	return redirect(url_for("countsbystate", state=selectedstate))
 
-@app.route("/state/<state>", methods=["GET", "POST"])
+@app.route("/state-statistics/<state>", methods=["GET", "POST"])
 def countsbystate(state):
 	if state == "all":
 		return redirect(url_for("index"))
@@ -127,14 +139,20 @@ def countsbystate(state):
 def safety():
 	return render_template("safety.html", tips=safety_info())
 
-@app.route("/county")
+@app.route("/county-statistics")
 def displaycounty():
 	county_data(states)
 	return render_template("county.html")
 
+@app.route("/graph")
+def showgraph():
+	if not path.exists("graph.png"):
+		county_data(states)
+	return render_template("graph.html")
+
 @app.route("/")
 def home():
-	return redirect(url_for("index.html"))
+	return render_template("home.html")
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=8080)
