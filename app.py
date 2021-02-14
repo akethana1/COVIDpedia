@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup as bs, SoupStrainer as ss
 import requests
 import pandas as pd
 from datetime import timedelta
+from os import path
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_session import Session
 
@@ -9,7 +10,7 @@ from flask_session import Session
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
-app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(hours=24)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 Session(app)
 
 states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana","Iowa","Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
@@ -19,6 +20,7 @@ def setup():
 	if "state_data" not in session:
 		session["state_data"] = state_data(states)
 		county_data(states)
+
 	return session["state_data"]
 
 def state_data(s):
@@ -42,7 +44,7 @@ def state_data(s):
 	return data, yesterday
 
 def county_data(s):
-	if "state_data" not in session:
+	if "state_data" not in session or not path.exists("templates/county.html"):
 		data = []
 
 		for state in s:
@@ -60,12 +62,14 @@ def county_data(s):
 		for i in range(50):
 			data[i] = data[i].rename(columns={
 			"Unnamed: 0": "State / County",
-			"Per 100,000": "Cases Per 100,000",
-			"Per 100,000.1": "Deaths Per 100,000",
-			"Daily avg. in last 7 days": "Daily avg. Cases in last 7 days",
-			"Per 100,000.2": "Daily avg. Cases in last 7 days per 100,000",
-			"Daily avg.in last 7 days.1": "Daily avg. Deaths in last 7 days",
-			"Per 100,000.3": "Daily avg. Deaths in last 7 days per 100,000"
+			"Totalcases": "Total Cases",
+			"Totaldeaths": "Total Deaths",
+			"Per 100,000": "Cases Per 100K",
+			"Per 100,000.1": "Deaths Per 100K",
+			"Daily avg.in last7 days": "Average Daily Cases - Last 7 Days",
+			"Per 100,000.2": "Average Daily Cases Per 100K - Last 7 Days",
+			"Daily avg.in last7 days.1": "Average Daily Deaths - Last 7 Days",
+			"Per 100,000.3": "Average Daily Deaths Per 100K - Last 7 Days"
 			})
 			data[i] = data[i].drop(datacolumns[-1], axis=1)
 
@@ -113,6 +117,10 @@ def safety():
 def displaycounty():
 	county_data(states)
 	return render_template("county.html")
+
+@app.route("/")
+def home():
+	return redirect("index.html")
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=8080)
