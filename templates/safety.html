@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Safety Tips
+{% endblock %}
+
+{% block main %}
+    <ul>
+    {% for tip in tips %}
+        <li>
+            {{tip}}
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}
