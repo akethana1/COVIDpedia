@@ -1,0 +1,12 @@
+os
+lxml
+bs4
+requests
+pandas
+html5lib
+IPython
+seaborn
+matplotlib
+datetime
+flask
+flask_session
