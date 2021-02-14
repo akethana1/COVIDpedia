@@ -6,14 +6,13 @@ from os import path
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_session import Session
 
-# load data once every day
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 Session(app)
 
-states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana","Iowa","Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
+states = ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa","Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"]
 
 @app.before_first_request
 def setup():
@@ -25,6 +24,20 @@ def setup():
 
 def state_data(s):
 	data = [{"state": _} for _ in s]
+
+	territories = ["american samoa", "district of columbia", "guam", "marshall islands", "micronesia", "northern mariana islands", "palau", "puerto rico", "u.s. virgin islands"]
+	unitedstates = s + territories
+
+	page3 = requests.get("https://www.cdc.gov/coronavirus/2019-ncov/vaccines/index.html")
+	soup3 = bs(page3.content, 'html.parser')
+	soup3.find_all('a', attrs={"class":"dropdown-item noLinking"})
+	links = []
+
+	for link in soup3.find_all('a', attrs={"class":"dropdown-item noLinking"}, href=True):
+		links.append(link['href'])
+		statelinks = dict(zip(unitedstates, links))
+	for territory in territories:
+		del statelinks[territory]
 
 	for state in s:
 		url = f"https://www.nytimes.com/interactive/2020/us/{state.replace(' ', '-').lower()}-coronavirus-cases.html"
@@ -38,6 +51,7 @@ def state_data(s):
 		soup = bs(response.content, features="html.parser", parse_only=strainer)
 		yesterday = str(soup.find_all("th", attrs={"class": "header yesterday svelte-fin3s2"})[0].text).split("On ")[1]
 
+		data[s.index(state)]["link"] = statelinks[state]
 		data[s.index(state)]["cases"] = counts[0].text
 		data[s.index(state)]["deaths"] = counts[1].text
 		data[s.index(state)]["hospitalized"] = counts[2].text
@@ -120,7 +134,7 @@ def displaycounty():
 
 @app.route("/")
 def home():
-	return redirect("index.html")
+	return redirect(url_for("index.html"))
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=8080)
