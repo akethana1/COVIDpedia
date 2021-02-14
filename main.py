@@ -68,22 +68,23 @@ soup3.find_all('a',attrs={"class":"dropdown-item noLinking"})
 print(soup3.find_all('a',attrs={"class":"dropdown-item noLinking"}))
 links=[]
 states=[
-        "alabama", "alaska", "arizona", "arkansas", "california", "colorado",
-        "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho",
-        "illinois", "indiana", "iowa", "kansas", "kentucky", "louisiana",
-        "maine", "maryland", "massachusetts", "michigan", "minnesota",
-        "sippi", "missouri", "montana", "nebraska", "nevada",
-        "new hampshire", "new jersey", "new mexico", "new york",
-        "north carolina", "north dakota", "ohio", "oklahoma", "oregon",
-        "pennsylvania", "rhode island", "south carolina", "south dakota",
-        "tennessee", "texas", "utah", "vermont", "virginia", "washington",
-        "west virginia", "wisconsin", "wyoming"]
+        "alabama", "alaska", "american samoa", "arizona", "arkansas", "california", "colorado",
+        "connecticut", "delaware", "district of columbia", "florida", "georgia", "guam", "hawaii", "idaho",
+        "illinois", "indiana", "iowa", "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts", "marshall islands", "michigan", "micronesia","minnesota", "mississippi", "missouri", "montana", "nebraska", "nevada","new hampshire", "new jersey", "new mexico", "new york", "north carolina", "north dakota", "northern mariana islands", "ohio", "oklahoma", "oregon","palau","pennsylvania", "puerto rico", "rhode island", "south carolina", "south dakota","tennessee", "texas", "u.s. virgin islands", "utah", "vermont", "virginia", "washington", "west virginia", "wisconsin", "wyoming"]
 for i in range(len(soup3.find_all('a',attrs={"class":"dropdown-item noLinking"}))):
   print(print(soup3.find_all('a',attrs={"class":"dropdown-item noLinking"})[i].get_text()))
 for link in soup3.find_all('a',attrs={"class":"dropdown-item noLinking"}, href=True):
     links.append(link['href'])
+statelinks = dict(zip(states, links))
 print(states)
 print(links)
+print(statelinks)
+territories = ["american samoa", "district of columbia", "guam", "marshall islands","micronesia", "northern mariana islands","palau", "puerto rico", "u.s. virgin islands"]     
+for territory in territories:
+  del statelinks[territory]
+
+#delete dictionary items pythons
+print(statelinks)
 
 
 
