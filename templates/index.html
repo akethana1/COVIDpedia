@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block main %}
-    <form action="{{url_for('index')}}", method="post">
+    <form action="{{url_for('getstate')}}", method="post">
       <select name="stateselector">
         <option value="default" disabled>choose a state</option>
         <option value="all">ALL STATES</option>
