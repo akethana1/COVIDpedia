@@ -4,9 +4,11 @@ import pandas as pd
 from datetime import timedelta
 from os import path
 import seaborn as sns
-import matplotlib.pyplot as plt
+import matplotlib
 from flask import Flask, render_template, request, redirect, session, url_for
 from flask_session import Session
+
+matplotlib.use('Agg')
 
 # load data once every day
 app = Flask(__name__)
@@ -93,11 +95,11 @@ def county_data(s):
 		totalcases_state = []
 		abbreviations = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"]
 		for i in range(len(abbreviations)):
-			totalcases_state.append(data[i]['Total Cases'][0])
-		fig_dims = (30, 30)
-		fig, ax = plt.subplots(figsize=fig_dims)
+			totalcases_state.append(int(data[i]['Total Cases'][0]))
+		fig_dims = (100, 100)
+		fig, ax = matplotlib.pyplot.subplots(figsize=fig_dims)
 		plot = sns.barplot(x = abbreviations, y = totalcases_state, ax=ax)
-		plot.figure.savefig("graph.pdf")
+		plot.figure.savefig("static/graph.png")
 
 		countyfile = open("templates/county.html", "w")
 		countyfile.close()
@@ -146,7 +148,7 @@ def displaycounty():
 
 @app.route("/graph")
 def showgraph():
-	if not path.exists("graph.png"):
+	if not path.exists("static/graph.png"):
 		county_data(states)
 	return render_template("graph.html")
 
