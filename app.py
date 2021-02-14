@@ -10,7 +10,6 @@ from flask_session import Session
 
 matplotlib.use('Agg')
 
-# load data once every day
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
@@ -63,7 +62,7 @@ def state_data(s):
 	return data, yesterday
 
 def county_data(s):
-	if "state_data" not in session or not path.exists("templates/county.html") or not path.exists("graph.png"):
+	if "state_data" not in session or not path.exists("templates/county.html") or not path.exists("static/graph.png"):
 		data = []
 
 		for state in s:
@@ -99,7 +98,7 @@ def county_data(s):
 		fig_dims = (100, 100)
 		fig, ax = matplotlib.pyplot.subplots(figsize=fig_dims)
 		plot = sns.barplot(x = abbreviations, y = totalcases_state, ax=ax)
-		plot.figure.savefig("static/graph.png")
+		plot.figure.savefig("static/graph.png", bbox_inches='tight')
 
 		countyfile = open("templates/county.html", "w")
 		countyfile.close()
