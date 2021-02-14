@@ -8,9 +8,12 @@
 {% set yesterday = data["yesterday"] %}
 {% set all_states = data["all_states"] %}
 
+{% block heading %}
+    Statistics By State - {{ yesterday }}
+{% endblock %}
+
 {% block main %}
-    Counts Per State - {{ yesterday }}&nbsp;&nbsp;&nbsp;
-    <form action="/state", method="post">
+    <form action="{{url_for('index')}}", method="post">
       <select name="stateselector">
         <option value="default" disabled>choose a state</option>
         <option value="all">ALL STATES</option>
