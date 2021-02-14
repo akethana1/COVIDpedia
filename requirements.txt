@@ -1,4 +1,3 @@
-os
 lxml
 bs4
 requests
