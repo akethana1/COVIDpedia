@@ -4,25 +4,14 @@
 
     <head>
 
-        <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <!-- documentation at http://getbootstrap.com/docs/4.1/, alternative themes at https://bootswatch.com/ -->
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
-
-        <link href="/static/favicon.ico" rel="icon">
 
         <link href="/static/styles.css" rel="stylesheet">
 
-        <script src="/static/scripts.js"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-
         <title>COVIDpedia | {% block title %}{% endblock %}</title>
-
-        <style>{% block styles %}{% endblock %}</style>
 
     </head>
 
@@ -37,6 +26,8 @@
                 </ul>
             </div>
         </nav>
+
+        <h1>{% block heading %}{% endblock %}</h1>
 
         <main class="container">
             {% block main %}{% endblock %}
